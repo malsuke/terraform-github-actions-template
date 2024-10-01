@@ -1,0 +1,26 @@
+name: terraform fmt
+
+on:
+  pull_request:
+    paths:
+      - "terraform/**/*.tf"
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Terraform version
+        id: terraform-version
+        uses: bigwheel/get-terraform-version-action@v1.2.0
+        with:
+          path: ${{ matrix.directory }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive

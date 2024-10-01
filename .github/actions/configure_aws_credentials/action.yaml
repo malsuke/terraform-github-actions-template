@@ -1,0 +1,21 @@
+name: Configure AWS Credentials
+
+description: Configure AWS credentials for use in other actions
+
+inputs:
+  aws-role-arn:
+    description: The ARN of the role to assume
+    required: false
+    default: ${{ secrets.AWS_ROLE_ARN }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      id: aws-auth
+      continue-on-error: true
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws-role-arn }}
+        role-session-name: github-actions
+        aws-region: ap-northeast-1
