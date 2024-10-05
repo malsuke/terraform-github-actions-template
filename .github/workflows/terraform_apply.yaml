@@ -29,7 +29,7 @@ jobs:
         id: get_dirs
         shell: bash
         run: |
-          changed_dirs=$(git diff --name-only origin/main...HEAD | \
+          changed_dirs=$(git diff --name-only HEAD^ HEAD | \
             grep '/' | \
             grep '\.tf$' | \
             xargs -n 1 dirname | \
