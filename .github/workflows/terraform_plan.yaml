@@ -26,7 +26,7 @@ jobs:
           changed_dirs=$(git diff --name-only origin/main...HEAD | \
             grep '/' | \
             grep '\.tf$' | \
-            cut -d '/' -f1,2 | \
+            xargs -n 1 dirname | \
             sort -u | \
             jq -R -s -c 'split("\n") | map(select(length > 0))')
           if [ -z "$changed_dirs" ]; then
