@@ -1,0 +1,73 @@
+name: manual terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply_or_destroy:
+        type: string
+        description: "Apply or destroy"
+        required: true
+        options:
+          - "apply"
+          - "destroy"
+      directory:
+        type: string
+        description: "Directory to apply or destroy"
+        required: true
+
+jobs:
+  apply:
+    if: ${{ github.event.inputs.apply_or_destroy == 'apply' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup AWS Credentials
+        uses: ./.github/actions/configure-aws-credentials
+        id: configure-aws-credentials
+        with:
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+
+      - name: Get Terraform version
+        id: terraform-version
+        uses: bigwheel/get-terraform-version-action@v1.2.0
+
+      - name: SetUp Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+  destroy:
+    if: ${{ github.event.inputs.apply_or_destroy == 'destroy' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup AWS Credentials
+        uses: ./.github/actions/configure-aws-credentials
+        id: configure-aws-credentials
+        with:
+          aws-role-arn: ${{ secrets.AWS_ROLE_ARN }}
+
+      - name: Get Terraform version
+        id: terraform-version
+        uses: bigwheel/get-terraform-version-action@v1.2.0
+
+      - name: SetUp Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
