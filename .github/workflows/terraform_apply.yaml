@@ -1,7 +1,13 @@
-name: terraform plan
+name: terraform apply
 
 on:
   pull_request:
+    branches:
+      - main
+    types:
+      - closed
+    paths:
+      - "terraform/**"
 
 permissions:
   id-token: write
@@ -76,8 +82,8 @@ jobs:
       - name: Terraform init
         run: terraform init
 
-      - name: Terraform plan
+      - name: Terraform apply
         run: |
-          tfcmt plan -patch -- terraform plan -no-color -input=false
+          tfcmt -var "author:${{ github.event.pull_request.merged_by.login }}" apply -- terraform apply -auto-approve
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
