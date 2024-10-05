@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       apply_or_destroy:
-        type: string
+        type: choice
         description: "Apply or destroy"
         required: true
         options:
