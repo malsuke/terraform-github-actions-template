@@ -38,13 +38,12 @@ jobs:
         with:
           terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
 
-      - name: Change Dir
-        run: cd ${{ github.event.inputs.directory }}
-
       - name: Terraform Init
+        working-directory: ${{ github.event.inputs.directory }}
         run: terraform init
 
       - name: Terraform Apply
+        working-directory: ${{ github.event.inputs.directory }}
         run: terraform apply -auto-approve 
 
   destroy:
@@ -69,11 +68,10 @@ jobs:
         with:
           terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
 
-      - name: Change Dir
-        run: cd ${{ github.event.inputs.directory }}
-
       - name: Terraform Init
+        working-directory: ${{ github.event.inputs.directory }}
         run: terraform init
 
       - name: Terraform Destroy
+        working-directory: ${{ github.event.inputs.directory }}
         run: terraform destroy -auto-approve
