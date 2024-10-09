@@ -15,6 +15,10 @@ on:
         description: "Directory to apply or destroy"
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   S3_BUCKET: "terraform-state-bucket-730335203034"
 
