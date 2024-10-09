@@ -15,6 +15,9 @@ on:
         description: "Directory to apply or destroy"
         required: true
 
+env:
+  S3_BUCKET: "terraform-state-bucket-730335203034"
+
 jobs:
   apply:
     if: ${{ github.event.inputs.apply_or_destroy == 'apply' }}
@@ -44,7 +47,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ${{ github.event.inputs.directory }}
-        run: terraform apply -auto-approve 
+        run: terraform apply -auto-approve
 
   destroy:
     if: ${{ github.event.inputs.apply_or_destroy == 'destroy' }}
@@ -68,10 +71,21 @@ jobs:
         with:
           terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
 
+      - name: Setup tfcmt
+        uses: shmokmt/actions-setup-tfcmt@v2
+        with:
+          version: v4.6.0
+
       - name: Terraform Init
         working-directory: ${{ github.event.inputs.directory }}
         run: terraform init
 
-      - name: Terraform Destroy
+      - name: Terraform destroy
         working-directory: ${{ github.event.inputs.directory }}
-        run: terraform destroy -auto-approve
+        run: |
+          s3_bucket=$(grep 'backend "s3"' backend.tf -A6 | grep bucket | awk '{print $3}' | sed -e 's/"//g') 
+          filename=$(basename ${{ github.event.inputs.directory }}.tfstate)
+
+          aws s3 cp s3://${s3_bucket}/${filename} terraform.tfstate
+          tfcmt -var "author:${{ github.event.pull_request.merged_by.login }}" destroy -- \
+            terraform destroy -auto-approve -lock-timeout=10m
