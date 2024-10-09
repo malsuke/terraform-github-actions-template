@@ -75,11 +75,6 @@ jobs:
         with:
           terraform_version: ${{ steps.terraform-version.outputs.terraform_version }}
 
-      - name: Setup tfcmt
-        uses: shmokmt/actions-setup-tfcmt@v2
-        with:
-          version: v4.6.0
-
       - name: Terraform Init
         working-directory: ${{ github.event.inputs.directory }}
         run: terraform init
@@ -91,5 +86,4 @@ jobs:
           filename=$(basename ${{ github.event.inputs.directory }}.tfstate)
 
           aws s3 cp s3://${s3_bucket}/${filename} terraform.tfstate
-          tfcmt -var "author:${{ github.event.pull_request.merged_by.login }}" destroy -- \
-            terraform destroy -auto-approve -lock-timeout=10m
+          terraform destroy -auto-approve -lock-timeout=10m
