@@ -3,7 +3,7 @@ locals {
   // 以下設定では、malsuke/terraform-github-actions-template 
   // の全てのブランチと、すべてのイベントに対してアクセスを許可をしている
   full_paths = [
-    "repo:malsuke/terraform-github-actions-template:*",
+    "repo:malsuke/*",
     "repo:malsuke/terraform-github-actions-template:pull_request"
   ]
 }
